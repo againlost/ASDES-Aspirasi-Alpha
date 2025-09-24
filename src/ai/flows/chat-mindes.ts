@@ -3,7 +3,7 @@
 /**
  * @fileOverview A conversational AI agent for the Aspirasi Desa website.
  *
- * - chatWithMindes - A function to handle chat interactions with the Mindes AI.
+ * - chatWithMindes - A 
  */
 
 import { ai } from '@/ai/genkit';
