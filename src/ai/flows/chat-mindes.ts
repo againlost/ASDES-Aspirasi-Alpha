@@ -51,6 +51,8 @@ A: Ada 4 status laporan: 1) Pending - laporan baru diterima dan menunggu verifik
 User's question: {{{data}}}
 
 Please answer in Bahasa Indonesia:`,
+}
+)
 `,
 });
 
