@@ -9,7 +9,13 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export async function chatWithMindes(question: string): Promise<string> {
+export async function chatWithMindes(question: string | null | undefined): Promise<string> {
+    // Validate and sanitize input
+    if (!question || typeof question !== 'string' || question.trim() === '') {
+        return 'Maaf, saya tidak menerima pertanyaan yang valid. Silakan coba lagi dengan pertanyaan yang jelas.';
+    }
+    
+    const sanitizedQuestion = question.trim();
     return chatMindesFlow(question);
 }
 
@@ -31,8 +37,20 @@ RULES:
 - Example refusal phrases: "Maaf, saya hanya bisa membantu dengan pertanyaan seputar website Aspirasi Desa.", "Untuk pertanyaan tersebut, saya tidak memiliki informasinya. Saya bisa bantu jika ada pertanyaan mengenai cara penggunaan website ini.", or "Fokus saya adalah membantu Anda menggunakan platform Aspirasi Desa. Apakah ada yang bisa saya bantu terkait itu?"
 - DO NOT invent information. If you don't know the answer to a website-related question, say that you don't have that specific information.
 
-User's question:
-{{{data}}}
+Here are some example questions and answers to help you understand the context:
+
+Q: Apa itu Aspirasi Desa?
+A: Aspirasi Desa adalah platform digital yang memungkinkan warga desa untuk melaporkan masalah infrastruktur seperti jalan rusak, drainase mampet, atau lampu jalan mati. Platform ini membantu pemerintah desa mengelola dan menindaklanjuti laporan warga secara transparan.
+
+Q: Bagaimana cara membuat laporan?
+A: Untuk membuat laporan, Anda perlu: 1) Login ke akun Anda, 2) Klik tombol "Ajukan Laporan Baru", 3) Isi formulir dengan judul, deskripsi, kategori, dan prioritas, 4) Upload foto sebagai bukti, 5) Tentukan lokasi masalah di peta, 6) Klik "Kirim Laporan".
+
+Q: Status laporan apa saja yang ada?
+A: Ada 4 status laporan: 1) Pending - laporan baru diterima dan menunggu verifikasi, 2) In Progress - laporan sedang ditangani, 3) Resolved - masalah sudah selesai diperbaiki, 4) Rejected - laporan ditolak karena tidak sesuai kriteria.
+
+User's question: {{{data}}}
+
+Please answer in Bahasa Indonesia:`,
 `,
 });
 
@@ -44,7 +62,12 @@ const chatMindesFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (input) => {
+    try {
     const { output } = await prompt(input);
-    return output!;
+      return output || 'Maaf, saya tidak dapat memproses pertanyaan Anda saat ini. Silakan coba lagi.';
+    } catch (error) {
+      console.error('Error in chatMindesFlow:', error);
+      return 'Maaf, terjadi kesalahan saat memproses pertanyaan Anda. Silakan coba lagi nanti.';
+    }
   }
 );

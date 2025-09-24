@@ -25,6 +25,12 @@ export function ChatAssistant() {
         if (input.trim() === '') return;
 
         const question = input;
+        
+        // Validate input before sending
+        if (!question || question.trim().length === 0) {
+            return;
+        }
+        
         const userMessage: Message = { role: 'user', content: question };
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
@@ -36,7 +42,10 @@ export function ChatAssistant() {
             setMessages((prev) => [...prev, assistantMessage]);
         } catch (error) {
             console.error('Error chatting with Mindes:', error);
-            const errorMessage: Message = { role: 'assistant', content: 'Maaf, sepertinya ada sedikit masalah. Coba tanyakan lagi nanti ya.' };
+            const errorMessage: Message = { 
+                role: 'assistant', 
+                content: 'Maaf, terjadi kesalahan saat memproses pertanyaan Anda. Silakan coba lagi atau hubungi administrator jika masalah berlanjut.' 
+            };
             setMessages((prev) => [...prev, errorMessage]);
         } finally {
             setIsLoading(false);
@@ -46,7 +55,9 @@ export function ChatAssistant() {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleSend();
+            if (input.trim()) {
+                handleSend();
+            }
         }
     }
 
